@@ -23,17 +23,14 @@ use parking_lot::ReentrantMutex;
 use std::{
 	error::Error,
 	io::stdout,
-	sync::{
-		Arc,
-		Mutex,
-	},
 };
 use tracing_subscriber::fmt::writer::MakeWriterExt;
 
 lazy_static! {
 	static ref LUA: ReentrantMutex<mlua::Lua> = ReentrantMutex::new(mlua::Lua::new());
 	static ref CONFIG: Config = Config::default();
-	static ref STRATA_STATE: Arc<Mutex<GlobalState<dyn Backend>>> = Arc::new(Mutex::new(<GlobalState::new()));
+	static ref STRATA_STATE: ReentrantMutex<GlobalState<dyn Backend>> =
+		ReentrantMutex::new(GlobalState::new());
 }
 
 #[tokio::main]

@@ -38,6 +38,7 @@ use smithay::{
 };
 use std::{
 	ffi::OsString,
+	ops::Deref,
 	sync::Mutex,
 	time::Instant,
 };
@@ -75,7 +76,7 @@ pub struct StrataState<BackendData: Backend + 'static> {
 }
 
 pub struct GlobalState<BackendData: Backend + 'static> {
-	inner: OnceCell<Mutex<StrataState<BackendData>>>,
+	inner: OnceCell<StrataState<BackendData>>,
 }
 
 impl<BackendData: Backend + 'static> GlobalState<BackendData> {
@@ -84,18 +85,19 @@ impl<BackendData: Backend + 'static> GlobalState<BackendData> {
 	}
 
 	pub fn set(&self, state: StrataState<BackendData>) -> Result<(), String> {
-		match self.inner.set(Mutex::new(state)) {
-			Ok(_) => Ok(()),
-			Err(_) => Err("Failed to set StrataState in GlobalState".to_string()),
-		}
+		self.inner.set(state).map_err(|_| "Failed to set StrataState in GlobalState".to_owned())
 	}
 
-	pub fn get(&self) -> std::sync::MutexGuard<'_, StrataState<BackendData>> {
-		self.inner.get().expect("State not initialized").lock().expect("Failed to lock state")
+	pub fn get(&self) -> Mutex<StrataState<BackendData>> {
+		self.inner.get()
 	}
+}
 
-	pub fn get_mut(&self) -> std::sync::MutexGuard<'_, StrataState<BackendData>> {
-		self.inner.get().expect("State not initialized").lock().expect("Failed to lock state")
+impl<BackendData: Backend + 'static> Deref for GlobalState<BackendData> {
+	type Target = StrataState<BackendData>;
+
+	fn deref(&self) -> Self::Target {
+		self.get().expect("Uninitialized")
 	}
 }
 
