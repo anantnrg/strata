@@ -3,6 +3,10 @@ use crate::libs::structs::config::Config;
 use chrono::Local;
 use clap::Parser;
 use lazy_static::lazy_static;
+use libs::structs::state::{
+	Backend,
+	GlobalState,
+};
 pub use libs::{
 	backends::init_with_backend,
 	parse_config::parse_config,
@@ -19,12 +23,17 @@ use parking_lot::ReentrantMutex;
 use std::{
 	error::Error,
 	io::stdout,
+	sync::{
+		Arc,
+		Mutex,
+	},
 };
 use tracing_subscriber::fmt::writer::MakeWriterExt;
 
 lazy_static! {
 	static ref LUA: ReentrantMutex<mlua::Lua> = ReentrantMutex::new(mlua::Lua::new());
 	static ref CONFIG: Config = Config::default();
+	static ref STRATA_STATE: Arc<Mutex<GlobalState<dyn Backend>>> = Arc::new(Mutex::new(<GlobalState::new()));
 }
 
 #[tokio::main]

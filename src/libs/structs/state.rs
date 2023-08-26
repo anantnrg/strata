@@ -1,4 +1,5 @@
 use crate::libs::structs::workspaces::Workspaces;
+use once_cell::sync::OnceCell;
 use smithay::{
 	backend::renderer::gles::GlesPixelProgram,
 	desktop::PopupManager,
@@ -37,6 +38,7 @@ use smithay::{
 };
 use std::{
 	ffi::OsString,
+	sync::Mutex,
 	time::Instant,
 };
 
@@ -70,6 +72,31 @@ pub struct StrataState<BackendData: Backend + 'static> {
 	pub socket_name: OsString,
 	pub workspaces: Workspaces,
 	pub pointer_location: Point<f64, Logical>,
+}
+
+pub struct GlobalState<BackendData: Backend + 'static> {
+	inner: OnceCell<Mutex<StrataState<BackendData>>>,
+}
+
+impl<BackendData: Backend + 'static> GlobalState<BackendData> {
+	pub fn new() -> Self {
+		Self { inner: OnceCell::new() }
+	}
+
+	pub fn set(&self, state: StrataState<BackendData>) -> Result<(), String> {
+		match self.inner.set(Mutex::new(state)) {
+			Ok(_) => Ok(()),
+			Err(_) => Err("Failed to set StrataState in GlobalState".to_string()),
+		}
+	}
+
+	pub fn get(&self) -> std::sync::MutexGuard<'_, StrataState<BackendData>> {
+		self.inner.get().expect("State not initialized").lock().expect("Failed to lock state")
+	}
+
+	pub fn get_mut(&self) -> std::sync::MutexGuard<'_, StrataState<BackendData>> {
+		self.inner.get().expect("State not initialized").lock().expect("Failed to lock state")
+	}
 }
 
 pub struct BorderShader {
