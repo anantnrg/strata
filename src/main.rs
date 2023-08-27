@@ -1,5 +1,4 @@
 mod libs;
-use crate::libs::structs::config::Config;
 use chrono::Local;
 use clap::Parser;
 use lazy_static::lazy_static;
@@ -9,7 +8,6 @@ use libs::structs::state::{
 };
 pub use libs::{
 	backends::init_with_backend,
-	parse_config::parse_config,
 	structs::{
 		args::Args,
 		state::{
@@ -19,18 +17,24 @@ pub use libs::{
 	},
 };
 use log::info;
-use parking_lot::ReentrantMutex;
+use parking_lot::{
+	ReentrantMutex,
+	RwLock,
+};
 use std::{
 	error::Error,
 	io::stdout,
 };
 use tracing_subscriber::fmt::writer::MakeWriterExt;
 
+use crate::libs::config::{
+	parse_config,
+	Config,
+};
+
 lazy_static! {
 	static ref LUA: ReentrantMutex<mlua::Lua> = ReentrantMutex::new(mlua::Lua::new());
-	static ref CONFIG: Config = Config::default();
-	static ref STRATA_STATE: ReentrantMutex<GlobalState<dyn Backend>> =
-		ReentrantMutex::new(GlobalState::new());
+	static ref CONFIG: RwLock<Config> = RwLock::new(Config::default());
 }
 
 #[tokio::main]
