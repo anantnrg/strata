@@ -69,7 +69,7 @@ use smithay::{
 	},
 };
 
-impl<BackendData: Backend> CompositorHandler for StrataState<BackendData> {
+impl CompositorHandler for StrataState {
 	fn compositor_state(&mut self) -> &mut CompositorState {
 		&mut self.compositor_state
 	}

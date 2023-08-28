@@ -1,5 +1,5 @@
 use crate::libs::structs::workspaces::Workspaces;
-use once_cell::sync::OnceCell;
+// use once_cell::sync::OnceCell;
 use smithay::{
 	backend::renderer::gles::GlesPixelProgram,
 	desktop::PopupManager,
@@ -38,25 +38,23 @@ use smithay::{
 };
 use std::{
 	ffi::OsString,
-	ops::Deref,
-	sync::Mutex,
 	time::Instant,
 };
 
-pub struct CalloopData<BackendData: Backend + 'static> {
-	pub state: StrataState<BackendData>,
-	pub display: Display<StrataState<BackendData>>,
+pub struct CalloopData {
+	pub state: StrataState,
+	pub display: Display<StrataState>,
 }
 
 pub trait Backend {
 	fn seat_name(&self) -> String;
 }
 
-pub struct StrataState<BackendData: Backend + 'static> {
+pub struct StrataState {
 	pub dh: DisplayHandle,
-	pub backend_data: BackendData,
+	pub backend_data: Box<dyn Backend>,
 	pub start_time: Instant,
-	pub loop_handle: LoopHandle<'static, CalloopData<BackendData>>,
+	pub loop_handle: LoopHandle<'static, CalloopData>,
 	pub loop_signal: LoopSignal,
 	pub compositor_state: CompositorState,
 	pub xdg_shell_state: XdgShellState,
@@ -65,7 +63,7 @@ pub struct StrataState<BackendData: Backend + 'static> {
 	pub output_manager_state: OutputManagerState,
 	pub data_device_state: DataDeviceState,
 	pub primary_selection_state: PrimarySelectionState,
-	pub seat_state: SeatState<StrataState<BackendData>>,
+	pub seat_state: SeatState<StrataState>,
 	pub layer_shell_state: WlrLayerShellState,
 	pub popup_manager: PopupManager,
 	pub seat: Seat<Self>,
@@ -74,33 +72,33 @@ pub struct StrataState<BackendData: Backend + 'static> {
 	pub workspaces: Workspaces,
 	pub pointer_location: Point<f64, Logical>,
 }
-
-pub struct GlobalState<BackendData: Backend + 'static> {
-	inner: OnceCell<StrataState<BackendData>>,
-}
-
-impl<BackendData: Backend + 'static> GlobalState<BackendData> {
-	pub fn new() -> Self {
-		Self { inner: OnceCell::new() }
-	}
-
-	pub fn set(&self, state: StrataState<BackendData>) -> Result<(), String> {
-		self.inner.set(state).map_err(|_| "Failed to set StrataState in GlobalState".to_owned())
-	}
-
-	pub fn get(&self) -> Mutex<StrataState<BackendData>> {
-		self.inner.get()
-	}
-}
-
-impl<BackendData: Backend + 'static> Deref for GlobalState<BackendData> {
-	type Target = StrataState<BackendData>;
-
-	fn deref(&self) -> Self::Target {
-		self.get().expect("Uninitialized")
-	}
-}
-
+//
+// pub struct GlobalState<BackendData: Backend + 'static> {
+// 	inner: OnceCell<StrataState<BackendData>>,
+// }
+//
+// impl<BackendData: Backend + 'static> GlobalState<BackendData> {
+// 	pub fn new() -> Self {
+// 		Self { inner: OnceCell::new() }
+// 	}
+//
+// 	pub fn set(&self, state: StrataState<BackendData>) -> Result<(), String> {
+// 		self.inner.set(state).map_err(|_| "Failed to set StrataState in GlobalState".to_owned())
+// 	}
+//
+// 	pub fn get(&self) -> Mutex<StrataState<BackendData>> {
+// 		self.inner.get()
+// 	}
+// }
+//
+// impl<BackendData: Backend + 'static> Deref for GlobalState<BackendData> {
+// 	type Target = StrataState<BackendData>;
+//
+// 	fn deref(&self) -> Self::Target {
+// 		self.get().expect("Uninitialized")
+// 	}
+// }
+//
 pub struct BorderShader {
 	pub rounded: GlesPixelProgram,
 	pub default: GlesPixelProgram,

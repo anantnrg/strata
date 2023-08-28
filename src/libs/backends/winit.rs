@@ -67,8 +67,8 @@ impl Backend for WinitData {
 }
 
 pub fn init_winit() {
-	let mut event_loop: EventLoop<CalloopData<WinitData>> = EventLoop::try_new().unwrap();
-	let mut display: Display<StrataState<WinitData>> = Display::new().unwrap();
+	let mut event_loop: EventLoop<CalloopData> = EventLoop::try_new().unwrap();
+	let mut display: Display<StrataState> = Display::new().unwrap();
 	let (backend, mut winit) = winit::init().unwrap();
 	let mode = Mode { size: backend.window_size().physical_size, refresh: 60_000 };
 	let output = Output::new(
@@ -80,7 +80,7 @@ pub fn init_winit() {
 			model: "Winit".into(),
 		},
 	);
-	let _global = output.create_global::<StrataState<WinitData>>(&display.handle());
+	let _global = output.create_global::<StrataState>(&display.handle());
 	output.change_current_state(Some(mode), Some(Transform::Flipped180), None, Some((0, 0).into()));
 	output.set_preferred(mode);
 	let damage_tracked_renderer = OutputDamageTracker::from_output(&output);
@@ -107,7 +107,6 @@ pub fn init_winit() {
 		})
 		.unwrap();
 
-
 	for cmd in &CONFIG.read().options.autostart {
 		Command::new("/bin/sh").arg("-c").args(cmd).spawn().ok();
 	}
@@ -117,7 +116,7 @@ pub fn init_winit() {
 
 pub fn winit_dispatch(
 	winit: &mut WinitEventLoop,
-	data: &mut CalloopData<WinitData>,
+	data: &mut CalloopData,
 	output: &Output,
 	full_redraw: &mut u8,
 ) {

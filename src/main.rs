@@ -2,10 +2,6 @@ mod libs;
 use chrono::Local;
 use clap::Parser;
 use lazy_static::lazy_static;
-use libs::structs::state::{
-	Backend,
-	GlobalState,
-};
 pub use libs::{
 	backends::init_with_backend,
 	structs::{
