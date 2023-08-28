@@ -35,7 +35,7 @@ use smithay::{
 	},
 };
 
-impl<BackendData: Backend> StrataState<BackendData> {
+impl StrataState {
 	pub fn process_input_event<I: InputBackend>(&mut self, event: InputEvent<I>) {
 		match event {
 			InputEvent::Keyboard { event, .. } => {

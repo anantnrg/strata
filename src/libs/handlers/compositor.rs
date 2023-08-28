@@ -96,9 +96,9 @@ impl CompositorHandler for StrataState {
 	}
 }
 
-delegate_compositor!(@<BackendData: Backend + 'static> StrataState<BackendData>);
+delegate_compositor!(StrataState);
 
-impl<BackendData: Backend> BufferHandler for StrataState<BackendData> {
+impl BufferHandler for StrataState {
 	fn buffer_destroyed(
 		&mut self,
 		_buffer: &smithay::reexports::wayland_server::protocol::wl_buffer::WlBuffer,
@@ -106,19 +106,19 @@ impl<BackendData: Backend> BufferHandler for StrataState<BackendData> {
 	}
 }
 
-impl<BackendData: Backend> ShmHandler for StrataState<BackendData> {
+impl ShmHandler for StrataState {
 	fn shm_state(&self) -> &ShmState {
 		&self.shm_state
 	}
 }
 
-delegate_shm!(@<BackendData: Backend + 'static> StrataState<BackendData>);
+delegate_shm!(StrataState);
 
-impl<BackendData: Backend> SeatHandler for StrataState<BackendData> {
+impl SeatHandler for StrataState {
 	type KeyboardFocus = FocusTarget;
 	type PointerFocus = FocusTarget;
 
-	fn seat_state(&mut self) -> &mut SeatState<StrataState<BackendData>> {
+	fn seat_state(&mut self) -> &mut SeatState<StrataState> {
 		&mut self.seat_state
 	}
 
@@ -160,21 +160,21 @@ impl<BackendData: Backend> SeatHandler for StrataState<BackendData> {
 	}
 }
 
-delegate_seat!(@<BackendData: Backend + 'static> StrataState<BackendData>);
+delegate_seat!(StrataState);
 
-impl<BackendData: Backend> DataDeviceHandler for StrataState<BackendData> {
+impl DataDeviceHandler for StrataState {
 	type SelectionUserData = ();
 	fn data_device_state(&self) -> &smithay::wayland::data_device::DataDeviceState {
 		&self.data_device_state
 	}
 }
 
-impl<BackendData: Backend> ClientDndGrabHandler for StrataState<BackendData> {}
-impl<BackendData: Backend> ServerDndGrabHandler for StrataState<BackendData> {}
+impl ClientDndGrabHandler for StrataState {}
+impl ServerDndGrabHandler for StrataState {}
 
-delegate_data_device!(@<BackendData: Backend + 'static> StrataState<BackendData>);
+delegate_data_device!(StrataState);
 
-impl<BackendData: Backend> PrimarySelectionHandler for StrataState<BackendData> {
+impl PrimarySelectionHandler for StrataState {
 	type SelectionUserData = ();
 	fn primary_selection_state(
 		&self,
@@ -183,10 +183,10 @@ impl<BackendData: Backend> PrimarySelectionHandler for StrataState<BackendData> 
 	}
 }
 
-delegate_primary_selection!(@<BackendData: Backend + 'static> StrataState<BackendData>);
-delegate_output!(@<BackendData: Backend + 'static> StrataState<BackendData>);
+delegate_primary_selection!(StrataState);
+delegate_output!(StrataState);
 
-impl<BackendData: Backend> WlrLayerShellHandler for StrataState<BackendData> {
+impl WlrLayerShellHandler for StrataState {
 	fn shell_state(&mut self) -> &mut WlrLayerShellState {
 		&mut self.layer_shell_state
 	}
@@ -227,4 +227,4 @@ impl<BackendData: Backend> WlrLayerShellHandler for StrataState<BackendData> {
 	}
 }
 
-delegate_layer_shell!(@<BackendData: Backend + 'static> StrataState<BackendData>);
+delegate_layer_shell!(StrataState);
