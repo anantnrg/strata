@@ -1,5 +1,6 @@
 use crate::{
 	libs::structs::{
+		backends::WinitData,
 		state::{
 			Backend,
 			CalloopData,
@@ -79,7 +80,7 @@ impl StrataState {
 		mut loop_handle: LoopHandle<'static, CalloopData>,
 		loop_signal: LoopSignal,
 		display: &mut Display<StrataState>,
-		backend_data: Box<dyn Backend>,
+		backend_data: impl Backend,
 	) -> Self {
 		let options = &CONFIG.read().options;
 
@@ -111,7 +112,7 @@ impl StrataState {
 		Self {
 			loop_handle,
 			dh,
-			backend_data,
+			backend_data: Box::new(backend_data),
 			start_time,
 			seat_name,
 			socket_name,
