@@ -108,7 +108,6 @@ impl StrataState {
 		let workspaces = Workspaces::new(config_workspace);
 		seat.add_pointer();
 		let socket_name = Self::init_wayland_listener(&mut loop_handle, display);
-
 		Self {
 			loop_handle,
 			dh,

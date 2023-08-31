@@ -84,13 +84,9 @@ pub fn init_winit() {
 	output.change_current_state(Some(mode), Some(Transform::Flipped180), None, Some((0, 0).into()));
 	output.set_preferred(mode);
 	let damage_tracked_renderer = OutputDamageTracker::from_output(&output);
-	let winitdata = WinitData { backend, damage_tracker: damage_tracked_renderer };
-	let state = StrataState::new(
-		event_loop.handle(),
-		event_loop.get_signal(),
-		&mut display,
-		Box::new(winitdata),
-	);
+	let winitdata = Box::new(WinitData { backend, damage_tracker: damage_tracked_renderer });
+	let state =
+		StrataState::new(event_loop.handle(), event_loop.get_signal(), &mut display, winitdata);
 
 	let mut data = CalloopData { display, state };
 	let state = &mut data.state;
