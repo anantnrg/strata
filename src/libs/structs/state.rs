@@ -1,7 +1,14 @@
 use crate::libs::structs::workspaces::Workspaces;
 //use once_cell::sync::OnceCell;
 use smithay::{
-	backend::renderer::gles::GlesPixelProgram,
+	backend::{
+		renderer::{
+			damage::OutputDamageTracker,
+			gles::GlesPixelProgram,
+			glow::GlowRenderer,
+		},
+		winit::WinitGraphicsBackend,
+	},
 	desktop::PopupManager,
 	input::{
 		Seat,
@@ -49,6 +56,8 @@ pub struct CalloopData {
 
 pub trait Backend {
 	fn seat_name(&self) -> String;
+	fn backend(&self) -> &WinitGraphicsBackend<GlowRenderer>;
+	fn damage_tracker(&self) -> &OutputDamageTracker;
 }
 
 pub struct StrataState {

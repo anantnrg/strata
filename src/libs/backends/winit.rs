@@ -25,6 +25,7 @@ use smithay::{
 			WinitError,
 			WinitEvent,
 			WinitEventLoop,
+			WinitGraphicsBackend,
 		},
 	},
 	desktop::{
@@ -64,6 +65,12 @@ impl Backend for WinitData {
 	fn seat_name(&self) -> String {
 		"winit".to_string()
 	}
+	fn backend(&self) -> &WinitGraphicsBackend<GlowRenderer> {
+		&self.backend
+	}
+	fn damage_tracker(&self) -> &OutputDamageTracker {
+		&self.damage_tracker
+	}
 }
 
 pub fn init_winit() {
@@ -90,7 +97,7 @@ pub fn init_winit() {
 
 	let mut data = CalloopData { display, state };
 	let state = &mut data.state;
-	BorderShader::init(state.backend_data.backend.renderer());
+	BorderShader::init(state.backend_data.backend().renderer());
 	for workspace in state.workspaces.iter() {
 		workspace.add_output(output.clone());
 	}
@@ -143,10 +150,10 @@ pub fn winit_dispatch(
 
 	*full_redraw = full_redraw.saturating_sub(1);
 
-	let size = winitdata.backend.window_size().physical_size;
+	let size = winitdata.backend().window_size().physical_size;
 	let damage = Rectangle::from_loc_and_size((0, 0), size);
 
-	winitdata.backend.bind().unwrap();
+	winitdata.backend().bind().unwrap();
 
 	let mut renderelements: Vec<CustomRenderElements<_>> = vec![];
 	let workspace = state.workspaces.current_mut();
@@ -164,7 +171,7 @@ pub fn winit_dispatch(
 			.flat_map(|(loc, surface)| {
 				AsRenderElements::<GlowRenderer>::render_elements::<CustomRenderElements<_>>(
 					surface,
-					winitdata.backend.renderer(),
+					winitdata.backend().renderer(),
 					loc.to_physical_precise_round(1),
 					Scale::from(1.0),
 					1.0,
@@ -172,7 +179,7 @@ pub fn winit_dispatch(
 			}),
 	);
 
-	renderelements.extend(workspace.render_elements(winitdata.backend.renderer()));
+	renderelements.extend(workspace.render_elements(winitdata.backend().renderer()));
 
 	renderelements.extend(
 		lower
@@ -181,7 +188,7 @@ pub fn winit_dispatch(
 			.flat_map(|(loc, surface)| {
 				AsRenderElements::<GlowRenderer>::render_elements::<CustomRenderElements<_>>(
 					surface,
-					winitdata.backend.renderer(),
+					winitdata.backend().renderer(),
 					loc.to_physical_precise_round(1),
 					Scale::from(1.0),
 					1.0,
@@ -190,11 +197,11 @@ pub fn winit_dispatch(
 	);
 
 	winitdata
-		.damage_tracker
-		.render_output(winitdata.backend.renderer(), 0, &renderelements, [0.1, 0.1, 0.1, 1.0])
+		.damage_tracker()
+		.render_output(winitdata.backend().renderer(), 0, &renderelements, [0.1, 0.1, 0.1, 1.0])
 		.unwrap();
 
-	winitdata.backend.submit(Some(&[damage])).unwrap();
+	winitdata.backend().submit(Some(&[damage])).unwrap();
 
 	workspace.windows().for_each(|window| {
 		window.send_frame(output, state.start_time.elapsed(), Some(Duration::ZERO), |_, _| {
@@ -205,5 +212,5 @@ pub fn winit_dispatch(
 	workspace.windows().for_each(|e| e.refresh());
 	display.flush_clients().unwrap();
 	state.popup_manager.cleanup();
-	BorderShader::cleanup(winitdata.backend.renderer());
+	BorderShader::cleanup(winitdata.backend().renderer());
 }

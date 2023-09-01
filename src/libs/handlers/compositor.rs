@@ -2,10 +2,7 @@ use crate::libs::{
 	handlers::xdg_shell::handle_commit,
 	state::ClientState,
 	structs::{
-		state::{
-			Backend,
-			StrataState,
-		},
+		state::StrataState,
 		workspaces::FocusTarget,
 	},
 	tiling::refresh_geometry,

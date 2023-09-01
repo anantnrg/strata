@@ -1,6 +1,5 @@
 use crate::{
 	libs::structs::{
-		backends::WinitData,
 		state::{
 			Backend,
 			CalloopData,

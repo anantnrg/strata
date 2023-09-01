@@ -1,8 +1,5 @@
 use crate::libs::structs::{
-	state::{
-		Backend,
-		StrataState,
-	},
+	state::StrataState,
 	workspaces::FocusTarget,
 };
 use smithay::{
