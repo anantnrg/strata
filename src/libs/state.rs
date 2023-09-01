@@ -79,7 +79,7 @@ impl StrataState {
 		mut loop_handle: LoopHandle<'static, CalloopData>,
 		loop_signal: LoopSignal,
 		display: &mut Display<StrataState>,
-		backend_data: impl Backend,
+		backend_data: impl Backend + 'static,
 	) -> Self {
 		let options = &CONFIG.read().options;
 

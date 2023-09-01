@@ -5,10 +5,11 @@ use smithay::backend::{
 	},
 	winit::WinitGraphicsBackend,
 };
+use std::cell::RefCell;
 
 pub struct WinitData {
-	pub backend: WinitGraphicsBackend<GlowRenderer>,
-	pub damage_tracker: OutputDamageTracker,
+	pub backend: RefCell<WinitGraphicsBackend<GlowRenderer>>,
+	pub damage_tracker: RefCell<OutputDamageTracker>,
 }
 
 impl WinitData {
@@ -16,6 +17,6 @@ impl WinitData {
 		backend: WinitGraphicsBackend<GlowRenderer>,
 		damage_tracker: OutputDamageTracker,
 	) -> Self {
-		Self { backend, damage_tracker }
+		Self { backend: RefCell::new(backend), damage_tracker: RefCell::new(damage_tracker) }
 	}
 }

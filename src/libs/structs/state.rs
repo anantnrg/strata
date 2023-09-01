@@ -43,6 +43,7 @@ use smithay::{
 		shm::ShmState,
 	},
 };
+use std::cell::RefMut;
 use std::{
 	ffi::OsString,
 	//	ops::Deref,
@@ -56,8 +57,8 @@ pub struct CalloopData {
 
 pub trait Backend {
 	fn seat_name(&self) -> String;
-	fn backend(&self) -> &WinitGraphicsBackend<GlowRenderer>;
-	fn damage_tracker(&self) -> &OutputDamageTracker;
+	fn get_backend(&mut self) -> RefMut<WinitGraphicsBackend<GlowRenderer>>;
+	fn get_damage_tracker(&mut self) -> RefMut<OutputDamageTracker>;
 }
 
 pub struct StrataState {

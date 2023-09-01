@@ -118,7 +118,7 @@ impl Config {
 		*self = config;
 	}
 
-	pub fn update(&mut self, config: Config) {
+	pub fn update(&mut self, _config: Config) {
 		// TODO
 		unimplemented!()
 	}
